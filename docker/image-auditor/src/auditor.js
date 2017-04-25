@@ -29,10 +29,10 @@ var currentInstruments = new Map();
 }*/
 
 //ecoute musiciens
-socket.on('listening', function(){
+/*socket.on('listening', function(){
 		var address = socket.address();
-		console.log("Ecoute sur: " = address.address + ":" + address.port);
-	});
+		console.log("Ecoute sur: " + address.address + ":" + address.port);
+	});*/
 	
 //recup du payload
 socket.on('message', function(message, source){
@@ -41,6 +41,11 @@ socket.on('message', function(message, source){
 		//REMPLIR MAP
 		
 	});
+	
+socket.bind(protocol.PORT_ECOUTE, function(){
+		socket.addMembership(protocol.MULTICAST_ADDRESS);	
+	});
+//a l'appel du tcp eliminer ce qui n'existe plus puis envoyer
 
 //serveur TCP
 /*
