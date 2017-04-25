@@ -1,6 +1,10 @@
 FROM node:4.3.1
 MAINTAINER Aurelie Levy <aurelie.levy@heig-vd.ch>
 
+EXPOSE 2205
+
 COPY src /opt/app/
 
-CMD ["node", "/opt/app/auditor.js"]
+RUN cd /opt/app
+
+ENTRYPOINT ["node", "/opt/app/auditor.js"]
