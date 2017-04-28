@@ -26,9 +26,10 @@ function Musicien(instrument){
 
 Musicien.prototype.update = function(){
 	var toSend = {
-		'uuid' : uuid,
+		'uuid' : this.uuid,
 		'instrument' : this.instrument,
-		'sound' : INSTRUMENTS[process.argv[2]]
+		'sound' : INSTRUMENTS[process.argv[2]],
+		'activeSince' : new Date()
 	};
 	var payload = JSON.stringify(toSend);//transforme en json
 	
@@ -48,4 +49,4 @@ if(INSTRUMENTS[instru] === undefined){//verification de la demande
 	});
 }
 var mus = new Musicien(instru);
-setInterval(mus.update,1000);
+setInterval(mus.update.bind(mus),protocol.INTERVAL);

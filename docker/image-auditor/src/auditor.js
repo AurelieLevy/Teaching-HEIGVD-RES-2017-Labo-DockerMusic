@@ -1,24 +1,13 @@
 //doit retourner un tableau json contenant le resultat de son ecoute
-//console.log("Put a message here.")
-
-/*var net = require('net');
-
-var server = net.createServer(function(socket) {
-	socket.write('Echo server\r\n');
-	socket.pipe(socket);
-});
-
-server.listen(1337, '127.0.0.1');*/
-
 
 var protocol = require('./protocol');
 //var entendu[];//trace de ce qui est entendu
 
 //il faut les datagrammes des sockets
 var datagrammes = require('dgram');
-var socket = datagrammes.createSocket('udp4'); //comme vu en cours
+var udpCo = datagrammes.createSocket('udp4'); //comme vu en cours
 
-var currentInstruments = new Map();
+var currentMusicians= [];
 
 /*var instruments = {
   piano: "ti-ta-ti",
@@ -28,36 +17,98 @@ var currentInstruments = new Map();
   drum: "boom-boom"
 }*/
 
-//ecoute musiciens
-/*socket.on('listening', function(){
-		var address = socket.address();
-		console.log("Ecoute sur: " + address.address + ":" + address.port);
-	});*/
+/*var musicianToSend  = {
+	'uuid' : null,
+	'instrument' : null,
+	'activeSince' : new Date()
+};*/
+
+var musiDico = new Map();
+/*
+musiDico.set(clef, 'obj');
+musiDico.get(clef);*/
+
 	
 //recup du payload
-socket.on('message', function(message, source){
-		console.log("Message: " + message + " Source port:" + source.port);
-		var currentInstruments = JSON.parse(message);
-		//REMPLIR MAP
+udpCo.on('message', function(message, source){
+	console.log("Message: " + message + " Source port:" + source.port);
+	var currentInstruments = JSON.parse(message);
+	if(!musiDico.has(currentInstruments.uuid)){
+		musiDico.set(currentInstruments.uuid, {
+			'uuid' : currentInstruments.uuid,
+			'instrument' : currentInstruments.instrument,
+			'activeSince' : new Date()
+		});
+	}
+	else{
+		musiDico.get(currentInstruments.uuid).activeSince = new Date();
+	}
+	//remplir tableau
+	/*for(var i = 0; i < currentMusicians.length; i++){
+		if(currentMusicians[i].uuid == currentInstruments.uuid){
+			currentMusicians[i].activeSince = new Date();				
+		}
 		
+	}*/	
+	/*musicianToSend.uuid = currentInstruments.uuid;
+	musicianToSend.instrument = currentInstruments.instrument;
+	if(musicianToSend.uuid == currentInstruments.uuid){				
+			musicianToSend.activeSince = new Date();				
+	}*/
+	
+	
+	/*currentMusicians.push(
+			{
+			'uuid' : currentInstruments.uuid,
+			'instrument' : currentInstruments.instrument,
+			'activeSince' : new Date()
+		}
+	);*/
+	//currentInstruments.activeSince = new Date();
+	//currentMusicians.push(musicianToSend);
+});
+	
+udpCo.bind(protocol.PORT_ECOUTE, function(){
+		udpCo.addMembership(protocol.MULTICAST_ADDRESS);	
 	});
 	
-socket.bind(protocol.PORT_ECOUTE, function(){
-		socket.addMembership(protocol.MULTICAST_ADDRESS);	
-	});
-//a l'appel du tcp eliminer ce qui n'existe plus puis envoyer
 
-//serveur TCP
-/*
+	
+//a l'appel du tcpCo eliminer ce qui n'existe plus puis envoyer
+//serveur tcpCo
 var net = require('net');
-var serveur = net.createServer();
-serveur.on('connection', musiciensActifs);
-serveur.listen(protocol.PORT_ECOUTE);
-*/
-/*
-function musiciensActifs(client){
+var tcpCo = net.createServer(function(envoi){
+	musiciensPlusActifs();
+	var result = JSON.stringify(currentMusicians);
+	//console.log('Coucou');
+	//console.log(currentMusicians);
+	envoi.write(result);
+	envoi.write('\r\n');
+	envoi.end();
+});
+tcpCo.listen(protocol.PORT_ECOUTE);
+
+
+function musiciensPlusActifs(){
+	var today = new Date();
+	currentMusicians = [];
+	musiDico.forEach(function (valeur, clef){
+		if(today - valeur.activeSince <= protocol.INACTIVITY_TIME){
+			currentMusicians.push(valeur);
+		}
+	});
 	
 	
-}*/
+	/*var today = new Date();
+	
+	for(var i = 0; i < currentMusicians.length; i++){
+		if(today - currentMusicians[i].activeSince > protocol.INACTIVITY_TIME){
+			console.log("musicien enlevé: " + currentMusicians[i].uuid);
+			currentMusicians.splice(i,1);//on enleve l element à la position i
+		}
+	}*/
+	
+	setTimeout(musiciensPlusActifs, protocol.TIMEOUT);
+}
 
 
