@@ -1,0 +1,11 @@
+{
+  "name": "image-auditor",
+  "version": "1.0.0",
+  "description": "auditor side",
+  "repository" : {
+		"type" : "git",
+		"url" : "https://github.com/AurelieLevy/Teaching-HEIGVD-RES-2017-Labo-DockerMusic"
+  }
+  "author": "Aurelie Levy",
+  "dependencies": {}
+}
