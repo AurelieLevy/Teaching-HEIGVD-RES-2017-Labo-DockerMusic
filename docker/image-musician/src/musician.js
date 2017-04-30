@@ -18,7 +18,6 @@ var socket = datagrammes.createSocket('udp4'); //comme vu en cours
 
 //classe musicien
 function Musicien(instrument){	
-	//this.instrument = INSTRUMENTS[Math.floor(Math.random() * INSTRUMENTS.length)];//prend un instrument random
 	this.instrument = instrument;
 	this.uuid = uuid.v4();
 	this.activeSince = new Date().toString();
